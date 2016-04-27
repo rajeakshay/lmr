@@ -279,6 +279,7 @@ deploy ()
 	    echo "Could not connect to master. Abandoning deployment."
 	    exit 1
 	fi
+	scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${master_ip}:/home/${user}/"
 	scp -i ${key_location} -o StrictHostKeyChecking=no ${SLIM_MAP_REDUCE_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
 	if [[ $? != 0 ]];
 	then
@@ -303,6 +304,7 @@ deploy ()
 	        echo "================================================================================================================================"
 	        exit 1
 	    fi
+	    scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${name}:/home/${user}/"
 	    scp -i ${key_location} -o StrictHostKeyChecking=no ${jar_name} ${user}"@"${name}":/home/${user}/"
 	    if [[ $? != 0 ]];
 	    then
