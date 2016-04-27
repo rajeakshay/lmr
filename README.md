@@ -1,6 +1,6 @@
 # MR Blitz [![Build Status](https://travis-ci.org/rajeakshay/mr-blitz.svg?branch=master)](https://travis-ci.org/rajeakshay/mr-blitz)
   
-A fast and lightweight MapReduce API to process large datasets on AWS EC2 cluster.
+A fast, lightweight and robust MapReduce API to process large datasets on AWS EC2 cluster.
 
 # Parallel data processing with MR Blitz API
 For the purpose of this example, we will assume that you have cloned this repository in your home folder. **(~/mr-blitz)**
