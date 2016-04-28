@@ -120,7 +120,7 @@ public class AWSManager {
 				String filenames = "";
 				for (List<String> elementList : listPartitions){
 					if (elementList.size() > clientId){
-						filenames = String.join(",", filenames, elementList.get(clientId));
+						filenames = StringUtils.join(new String[]{filenames, elementList.get(clientId)}, ",");
 					}
 				}
 
@@ -387,7 +387,7 @@ public class AWSManager {
 				String filenames = "";
 				for (List<String> elementList : listPartitions){
 					if (elementList.size() > clientId){
-						filenames = String.join(",", filenames, elementList.get(clientId));
+                        filenames = StringUtils.join(new String[]{filenames, elementList.get(clientId)}, ",");
 					}
 				}
 				filenames = filenames.substring(1);

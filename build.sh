@@ -1,26 +1,40 @@
 #!/bin/bash
 #
-# Authors: Akshay Raje, Afan Khan, Deepen Mehta, Abhijeet Sharma
+# Authors: Akshay Raje
 #
-# Builds slim-map-reduce.jar and copy to lib folder.
+# Builds mr-blitz.jar and makes it available in 'dist' directory as well as
+# installs mr-blitz.jar in local Maven repository.
 #
 # Pre-requisites:
 # ===============
-# Java 8 SE
+# Java 7 SE
 # Maven     (https://maven.apache.org/install.html)
 #
 # Step 0:
 # =======
 # Run the following to make this script executable -> chmod +x build.sh
 #
-echo "====================================================================="
-echo "Building slim-map-reduce.jar."
-echo "====================================================================="
+echo "============================================================================"
+echo "  BUILDING mr-blitz.jar..."
+echo "============================================================================"
 mkdir -p dist
-mvn clean package 1> /dev/null && cp target/slim-map-reduce.jar dist/slim-map-reduce.jar
+mvn clean package && cp target/mr-blitz.jar dist/mr-blitz.jar && mvn install:install-file -Dfile=dist/mr-blitz.jar -DgroupId=mr-blitz  -DartifactId=mr-blitz -Dversion=1.0 -Dpackaging=jar
 if [[ $? != 0 ]];
 then
-	echo "Error in building slim-map-reduce.jar. Existing slim-map-reduce.jar will remain untouched."
+	echo "============================================================================"
+    echo "  EXITING BUILD SCRIPT DUE TO AN ERROR."
+    echo "============================================================================"
 	exit 1
 fi
-echo "Latest build of slim-map-reduce.jar is available in dist folder."
+echo "============================================================================"
+echo "1. Latest build of mr-blitz.jar is available in dist folder."
+echo "2. Latest build of mr-blitz.jar is also installed in local Maven repository."
+echo "   Add a project dependency as follows: "
+echo "   <dependency>"
+echo "      <groupId>mr-blitz</groupId>"
+echo "      <artifactId>mr-blitz</artifactId>"
+echo "      <version>1.0</version>"
+echo "   </dependency>"
+echo "============================================================================"
+echo "  BUILD SCRIPT SUCCESSFUL"
+echo "============================================================================"

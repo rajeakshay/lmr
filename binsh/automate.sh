@@ -1,13 +1,15 @@
 #!/bin/bash
 #
-# Authors: Akshay Raje, Afan Khan, Deepen Mehta, Abhijeet Sharma
+# Authors: Akshay Raje, Afan Khan
+# Maintainer: Akshay Raje
 #
-# Use this script to automatically create a cluster, run Slim MapReduce jobs and terminate the cluster.
+# Use this script to automatically create a cluster, deploy MapReduce jobs built using MR Blitz API
+# and terminate the cluster.
 #
 # Pre-requisites:
 # ===============
 # awscli    (http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
-# Java 8 SE
+# Java 7 SE
 # Maven     (https://maven.apache.org/install.html)
 #
 # Step 0:
@@ -18,63 +20,63 @@
 # ======
 #  ./automate.sh start {No. of slaves}                (spins up EC2 instances, installs required software and starts the master)
 #  ./automate.sh stop                                 (terminate all EC2 instances to save money)
-#  ./automate.sh deploy {Job JAR} {arguments for JAR} (run Slim MapReduce job in the cluster and wait for the result in output S3 bucket)
+#  ./automate.sh deploy {Job JAR} {arguments for JAR} (run MR Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
 
-# Check for the existence of smr.config file
+# Check for the existence of mr-blitz.config file
 current_dir=$(dirname "$BASH_SOURCE")
-if [ ! -f "${current_dir}/smr.config" ];
+if [ ! -f "${current_dir}/mr-blitz.config" ];
 then
-   echo "Config file ${current_dir}/smr.config does not exist." >&2
+   echo "Config file ${current_dir}/mr-blitz.config does not exist." >&2
    exit 1 # Exit the script with an error status
 fi
 
 # Read in all the parameters from the config file
-source ${current_dir}/smr.config
+source ${current_dir}/mr-blitz.config
 
 # Perform validation of necessary config parameters
-if [ -z "$SLIM_MAP_REDUCE_CLASSPATH" ];
+if [ -z "$MRBLITZ_CLASSPATH" ];
 then
-    echo "Absolute path to slim-map-reduce.jar is not set in smr.config." >&2
+    echo "Absolute path to mr-blitz.jar is not set in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$key_location" ];
 then
-    echo "Absolute path to key-pair is not set in smr.config." >&2
+    echo "Absolute path to key-pair is not set in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$security_group" ];
 then
-    echo "EC2 security group is not set in smr.config." >&2
+    echo "EC2 security group is not set in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$image_id" ];
 then
-    echo "Image Id is required in smr.config to spin up ec2 instances." >&2
+    echo "Image Id is required in mr-blitz.config to spin up ec2 instances." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$user" ];
 then
-    echo "Default EC2 user name must be set in smr.config." >&2
+    echo "Default EC2 user name must be set in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$secret_folder" ];
 then
-    echo "Secret hidden folder name for storing key-pairs on EC2 must be specified in smr.config." >&2
+    echo "Secret hidden folder name for storing key-pairs on EC2 must be specified in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$master_instance_type" ];
 then
-    echo "Specify an EC2 instance type for master node in smr.config." >&2
+    echo "Specify an EC2 instance type for master node in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$node_instance_type" ];
 then
-    echo "Specify an EC2 instance type for slave nodes in smr.config." >&2
+    echo "Specify an EC2 instance type for slave nodes in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$port" ];
 then
-    echo "Default port number for Socket communication not specified in smr.config." >&2
+    echo "Default port number for Socket communication not specified in mr-blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 
@@ -170,15 +172,14 @@ install_software ()
 	local ip=$(aws ec2 describe-instances | grep PublicIpAddress | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 	for name in ${ip[@]}; do
 		echo ${name} >> _work/temp.txt
-		ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo add-apt-repository -y ppa:webupd8team/java; sudo apt-get -y update; echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections; sudo apt-get -y install oracle-java8-installer"
-		if [[ $? != 0 ]];
+		scp -i ${key_location} -o StrictHostKeyChecking=no ${key_location} ${user}"@"${name}":/home/${user}/" && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo mkdir -p .${secret_folder}; sudo mv ${key_name_with_extension} .${secret_folder}/"
+	    if [[ $? != 0 ]];
 		then
 		    echo "Error in opening SSH session with an EC2 instance. Abandoning software installation."
 		    stop
 		    exit 1
 		fi
-	    scp -i ${key_location} -o StrictHostKeyChecking=no ${key_location} ${user}"@"${name}":/home/${user}/" 1> /dev/null && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo mkdir -p .${secret_folder}; sudo mv ${key_name_with_extension} .${secret_folder}/"
-	    scp -i ${key_location} -o StrictHostKeyChecking=no -r tempfolder ${user}"@"${name}":/home/${user}/" 1> /dev/null && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo chmod 777 tempfolder; sudo mv tempfolder .aws; sudo rm -rf tempfolder"
+	    scp -i ${key_location} -o StrictHostKeyChecking=no -r tempfolder ${user}"@"${name}":/home/${user}/" && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo chmod 777 tempfolder; sudo mv tempfolder .aws; sudo rm -rf tempfolder"
 	done
 
 	# Erase the tempfolder
@@ -194,7 +195,7 @@ install_software ()
 	rm -rf _work/masterPublicAddress.txt
 	echo ${master_ip}:${port} > _work/masterPublicAddress.txt
 
-    # Notify master's public address and configured port to all the slave nodes and also check if Java 8 was installed
+    # Notify master's public address and configured port to all the slave nodes and also check if Java is installed
 	for name in ${ip[@]}; do
 	    ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "which java" >> _work/installation.txt
 	    if [[ $? != 0 ]];
@@ -245,7 +246,7 @@ start ()
 	echo "Initializing a cluster with 1 master and ${count} EC2 machines."
 	echo "==============================================================="
 	echo " "
-	echo "Cleaning old files and temp directories..."
+	echo "Cleaning old files and temporary directories..."
 	rm -rf _work
 	rm -rf tempfolder
 	rm -rf output
@@ -280,13 +281,13 @@ deploy ()
 	    exit 1
 	fi
 	scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${master_ip}:/home/${user}/"
-	scp -i ${key_location} -o StrictHostKeyChecking=no ${SLIM_MAP_REDUCE_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
+	scp -i ${key_location} -o StrictHostKeyChecking=no ${MRBLITZ_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
 	if [[ $? != 0 ]];
 	then
 	    echo "Could not deploy to master. Abandoning deployment."
 	    exit 1
 	fi
-	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar slim-map-reduce.jar ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
+	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar mr-blitz.jar ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
     if [[ $? != 0 ]];
 	then
 	    echo "Could not start resource manager on master. Abandoning deployment."

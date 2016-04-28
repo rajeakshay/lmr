@@ -33,7 +33,7 @@ public class MessageHandler implements Serializable {
 		return opcode;
 	}
 	/**
-	 * @param code the code to set
+	 * @param opcode the code to set
 	 */
 	public void setCode(int opcode) {
 		this.opcode = opcode;

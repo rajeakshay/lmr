@@ -2,7 +2,7 @@
 .DS_Store
 
 # Ignore runtime files
-smr.config
+*.config
 *.txt
 _SUCCESS
 _ERROR

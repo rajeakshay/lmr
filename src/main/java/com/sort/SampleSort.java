@@ -75,7 +75,7 @@ public class SampleSort {
 	 * @param concatSamples
 	 * @return
 	 */
-	public static String fetchPivotsFromSamples(String concatSamples) {
+	public static String fetchPivotsFromSamples(final String concatSamples) {
 		String pivots="";
 		if (concatSamples.length() > 0) {
 			String[] sampleArray=new ArrayList<String>() {
@@ -98,7 +98,7 @@ public class SampleSort {
 	 * @param pivots
 	 * @param ClientId
 	 */
-	public void partitionAndUploadData(String pivots, int ClientId){
+	public void partitionAndUploadData(final String pivots, int ClientId){
 		String[] pivotList = new ArrayList<String>() {
 			private static final long serialVersionUID = 1L;
 			{
