@@ -38,7 +38,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
-import com.google.common.collect.Lists;
 import com.main.ClientMain;
 import com.main.Context;
 import com.main.ServerMain;
@@ -48,6 +47,7 @@ import com.sort.SortObject;
 import com.utils.BufferedReaderIterable;
 import com.utils.FileMerger;
 import com.utils.FileUtils;
+import com.utils.CollectionUtils;
 
 /**
  * This class helps us manage connections to AWS services
@@ -116,7 +116,7 @@ public class AWSManager {
 				ArrayList<String> fileList = new ArrayList<String>();
 				fileList.addAll(filenamesTree);
 
-				List<List<String>> listPartitions = Lists.partition(fileList, ClientMain.N_INSTANCES);
+				List<List<String>> listPartitions = CollectionUtils.partition(fileList, ClientMain.N_INSTANCES);
 				String filenames = "";
 				for (List<String> elementList : listPartitions){
 					if (elementList.size() > clientId){
@@ -383,7 +383,7 @@ public class AWSManager {
 				// save all filenames to a list
 				ArrayList<String> fileList = new ArrayList<String>();
 				fileList.addAll(filenamesTree);
-				List<List<String>> listPartitions = Lists.partition(fileList, ClientMain.N_INSTANCES);
+				List<List<String>> listPartitions = CollectionUtils.partition(fileList, ClientMain.N_INSTANCES);
 				String filenames = "";
 				for (List<String> elementList : listPartitions){
 					if (elementList.size() > clientId){

@@ -18,7 +18,7 @@ echo "==========================================================================
 echo "  BUILDING mr-blitz.jar..."
 echo "============================================================================"
 mkdir -p dist
-mvn clean package && cp target/mr-blitz.jar dist/mr-blitz.jar && mvn install:install-file -Dfile=dist/mr-blitz.jar -DgroupId=mr-blitz  -DartifactId=mr-blitz -Dversion=1.0 -Dpackaging=jar
+mvn clean install && cp target/mr-blitz.jar dist/mr-blitz.jar
 if [[ $? != 0 ]];
 then
 	echo "============================================================================"
