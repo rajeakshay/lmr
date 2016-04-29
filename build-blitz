@@ -9,10 +9,10 @@
 # Maven     (https://maven.apache.org/install.html)
 #
 echo "============================================================================"
-echo "  BUILDING blitz.jar..."
+echo "  BUILDING BLITZ JAR"
 echo "============================================================================"
 mkdir -p dist
-mvn clean install && cp target/blitz.jar dist/blitz.jar
+mvn clean install && cp target/blitz-1.0.jar dist/blitz-1.0.jar
 if [[ $? != 0 ]];
 then
 	echo "============================================================================"
@@ -21,8 +21,8 @@ then
 	exit 1
 fi
 echo "============================================================================"
-echo "1. Latest build of blitz.jar is available in dist folder."
-echo "2. Latest build of blitz.jar is also installed in local Maven repository."
+echo "1. Latest jar is available in dist folder."
+echo "2. Latest jar is also installed in local Maven repository."
 echo "   Add a project dependency as follows: "
 echo "   <dependency>"
 echo "      <groupId>blitz</groupId>"

@@ -16,15 +16,15 @@
 #  ./blitz deploy {Job JAR} {arguments for JAR} (run Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
 
 # Check for the existence of blitz.config file
-current_dir=$(dirname "$BASH_SOURCE")
-if [ ! -f "${current_dir}/blitz.config" ];
+blitz_dir=$(dirname "$BASH_SOURCE")
+if [ ! -f "${blitz_dir}/blitz.config" ];
 then
-   echo "Config file ${current_dir}/blitz.config does not exist." >&2
+   echo "Config file ${blitz_dir}/blitz.config does not exist." >&2
    exit 1 # Exit the script with an error status
 fi
 
 # Read in all the parameters from the config file
-source ${current_dir}/blitz.config
+source ${blitz_dir}/blitz.config
 
 # Perform validation of necessary config parameters
 if [ -z "$BLITZ_CLASSPATH" ];
@@ -75,26 +75,31 @@ fi
 
 # Retrieve the name of .pem file from the given absolute path
 key_name_with_extension=$(basename "$key_location")
+# Retrieve the name of Blitz jar from the classpath
+blitz_jar=$(basename "$BLITZ_CLASSPATH")
 # Discard the .pem extension
 key_name="${key_name_with_extension%.*}"
 
 cleanup ()
 {
     echo "Cleaning up..."
-    rm -rf _work
-	rm -rf tempfolder
+    rm -rf _cloud
+	rm -rf _shortlived
 }
 
 stop ()
 {
 	instance=$(aws ec2 describe-instances | grep InstanceId | grep -E -o "i\-[0-9A-Za-z]+")
-	echo "====================================================================="
+	echo "=============================================================================================="
 	echo "Terminating all running EC2 instances."
-	echo "====================================================================="
+	echo "=============================================================================================="
 	for name in ${instance[@]}; do
 		aws ec2 terminate-instances --instance-ids $instance >> /dev/null
 	done
     cleanup
+    echo "=============================================================================================="
+	echo "All running EC2 instances terminated and temporary files cleaned."
+	echo "=============================================================================================="
 }
 
 start_slaves ()
@@ -135,13 +140,13 @@ start_master ()
 
 save_master_ip ()
 {
-	echo "Getting private and public IP Addresses of the master... "
+	echo "Saving private and public IP Addresses of the master... "
 	local master_private_ip=$(aws ec2 describe-instances | grep PrivateIpAddress | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | uniq)
 	local master_public_ip=$(aws ec2 describe-instances | grep PublicIpAddress | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}" | uniq)
-	echo ${master_private_ip} > _work/masterPrivateAddress.txt
-	echo ${master_public_ip} > _work/masterPublicAddress.txt
-	local n1=$(wc -w < _work/masterPrivateAddress.txt)
-	local n2=$(wc -w < _work/masterPublicAddress.txt)
+	echo ${master_private_ip} > _cloud/masterPrivateAddress.txt
+	echo ${master_public_ip} > _cloud/masterPublicAddress.txt
+	local n1=$(wc -w < _cloud/masterPrivateAddress.txt)
+	local n2=$(wc -w < _cloud/masterPublicAddress.txt)
 	if [[ ${n1} == 0 || ${n2} == 0 ]];
 	then
 	    echo "IP Address of the master could not be retrieved. Abandoning cluster initialization."
@@ -153,18 +158,18 @@ save_master_ip ()
 	fi
 }
 
-install_software ()
+prepare_machines ()
 {
     # Copy contents of .aws folder to another directory for copying to EC2
-    mkdir -p tempfolder
-	cp -r ~/.aws/* tempfolder
+    mkdir -p _shortlived
+	cp -r ~/.aws/* _shortlived
 
     echo "===================================================================================="
-	echo "Installing pre-requisite software on all EC2 instances (this might take a while)... "
+	echo "Preparing cluster machines to receive jobs... "
 	echo "===================================================================================="
 	local ip=$(aws ec2 describe-instances | grep PublicIpAddress | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 	for name in ${ip[@]}; do
-		echo ${name} >> _work/temp.txt
+		echo ${name} >> _cloud/temp.txt
 		scp -i ${key_location} -o StrictHostKeyChecking=no ${key_location} ${user}"@"${name}":/home/${user}/" && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo mkdir -p .${secret_folder}; sudo mv ${key_name_with_extension} .${secret_folder}/"
 	    if [[ $? != 0 ]];
 		then
@@ -172,32 +177,32 @@ install_software ()
 		    stop
 		    exit 1
 		fi
-	    scp -i ${key_location} -o StrictHostKeyChecking=no -r tempfolder ${user}"@"${name}":/home/${user}/" && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo chmod 777 tempfolder; sudo mv tempfolder .aws; sudo rm -rf tempfolder"
+	    scp -i ${key_location} -o StrictHostKeyChecking=no -r _shortlived ${user}"@"${name}":/home/${user}/" && ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "sudo chmod 777 _shortlived; sudo mv _shortlived .aws; sudo rm -rf _shortlived"
 	done
 
-	# Erase the tempfolder
-	rm -rf tempfolder
+	# Erase the _shortlived
+	rm -rf _shortlived
 
     # Exclude master's public address from the list to get all slave public addresses
-	grep -vf _work/masterPublicAddress.txt _work/temp.txt > _work/slavePublicAddresses.txt
-	rm -rf _work/temp.txt
+	grep -vf _cloud/masterPublicAddress.txt _cloud/temp.txt > _cloud/slavePublicAddresses.txt
+	rm -rf _cloud/temp.txt
 
     # Append the configured port number to master's public address for use in running job JAR
-	local master_ip=$(cat _work/masterPublicAddress.txt)
-	cp _work/masterPublicAddress.txt _work/masterPublicAddressOnly.txt
-	rm -rf _work/masterPublicAddress.txt
-	echo ${master_ip}:${port} > _work/masterPublicAddress.txt
+	local master_ip=$(cat _cloud/masterPublicAddress.txt)
+	cp _cloud/masterPublicAddress.txt _cloud/masterPublicAddressOnly.txt
+	rm -rf _cloud/masterPublicAddress.txt
+	echo ${master_ip}:${port} > _cloud/masterPublicAddress.txt
 
     # Notify master's public address and configured port to all the slave nodes and also check if Java is installed
 	for name in ${ip[@]}; do
-	    ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "which java" >> _work/installation.txt
+	    ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "which java" >> _cloud/installation.txt
 	    if [[ $? != 0 ]];
 		then
 		    echo "Java did not install on all machines. Cluster initialization failed."
 		    stop
 		    exit 1
 		fi
-		scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt ${user}"@"${name}":/home/${user}/" 1> /dev/null
+		scp -i ${key_location} -o StrictHostKeyChecking=no _cloud/masterPublicAddress.txt ${user}"@"${name}":/home/${user}/" 1> /dev/null
 	done
 }
 
@@ -235,23 +240,22 @@ start ()
         echo "Number of slave instances is not mentioned." >&2
         exit 1 # Exit the script with an error status
     fi
-    echo "==============================================================="
+    echo "============================================================================================"
 	echo "Initializing a cluster with 1 master and ${count} EC2 machines."
-	echo "==============================================================="
-	echo " "
+	echo "============================================================================================"
 	echo "Cleaning old files and temporary directories..."
-	rm -rf _work
-	rm -rf tempfolder
+	rm -rf _cloud
+	rm -rf _shortlived
 	rm -rf output
 	rm -rf _SUCCESS
-	mkdir -p _work
+	mkdir -p _cloud
 	start_master
 	save_master_ip
 	start_slaves $count
-	install_software
-	echo "============================================================="
+	prepare_machines
+	echo "============================================================================================"
 	echo "Cluster is ready to accept new jobs."
-	echo "============================================================="
+	echo "============================================================================================"
 }
 
 deploy ()
@@ -261,10 +265,10 @@ deploy ()
 	echo "============================================================================================"
     local jar_name=$1
     local other_params=${@:2}
-	local master_ip=$(cat _work/masterPublicAddressOnly.txt)
-	local master_private_ip=$(cat _work/masterPrivateAddress.txt)
-	local client_list=$(cat _work/slavePublicAddresses.txt)
-	local no_of_slaves=$(wc -l < _work/slavePublicAddresses.txt)
+	local master_ip=$(cat _cloud/masterPublicAddressOnly.txt)
+	local master_private_ip=$(cat _cloud/masterPrivateAddress.txt)
+	local client_list=$(cat _cloud/slavePublicAddresses.txt)
+	local no_of_slaves=$(wc -l < _cloud/slavePublicAddresses.txt)
 
 	echo "Starting resource manager on master "${master_ip}"..."
 	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "rm -rf success.out; rm -rf error.err"
@@ -273,14 +277,14 @@ deploy ()
 	    echo "Could not connect to master. Abandoning deployment."
 	    exit 1
 	fi
-	scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${master_ip}:/home/${user}/"
+	scp -i ${key_location} -o StrictHostKeyChecking=no _cloud/masterPublicAddress.txt "${user}@${master_ip}:/home/${user}/"
 	scp -i ${key_location} -o StrictHostKeyChecking=no ${BLITZ_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
 	if [[ $? != 0 ]];
 	then
 	    echo "Could not deploy to master. Abandoning deployment."
 	    exit 1
 	fi
-	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar blitz.jar ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
+	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar ${blitz_jar} ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
     if [[ $? != 0 ]];
 	then
 	    echo "Could not start resource manager on master. Abandoning deployment."
@@ -293,35 +297,36 @@ deploy ()
 		if [[ $? != 0 ]];
 	    then
 	        echo "Could not connect to slave instance. Abandoning deployment."
-	        echo "================================================================================================================================"
+	        echo "============================================================================================"
 	        echo "User program might still be running at master. Terminate cluster and deploy again."
-	        echo "================================================================================================================================"
+	        echo "============================================================================================"
 	        exit 1
 	    fi
-	    scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${name}:/home/${user}/"
+	    scp -i ${key_location} -o StrictHostKeyChecking=no _cloud/masterPublicAddress.txt "${user}@${name}:/home/${user}/"
 	    scp -i ${key_location} -o StrictHostKeyChecking=no ${jar_name} ${user}"@"${name}":/home/${user}/"
 	    if [[ $? != 0 ]];
 	    then
 	        echo "Could not deploy to slave instance. Abandoning deployment."
-	        echo "================================================================================================================================"
+	        echo "============================================================================================"
 	        echo "User program might still be running at master. Terminate cluster and deploy again."
-	        echo "================================================================================================================================"
+	        echo "============================================================================================"
 	        exit 1
 	    fi
 	    ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${name} "nohup java -Xms5g -Xmx10g -jar ${jar_name} ${other_params} 1> success.out 2> error.err < /dev/null &"
 	    if [[ $? != 0 ]];
 	    then
 	        echo "Could not start job on slave instance. Abandoning deployment."
-	        echo "================================================================================================================================"
-	        echo "User program might still be running at master and other slave EC2 instances. Terminate cluster and deploy again."
-	        echo "================================================================================================================================"
+	        echo "============================================================================================"
+	        echo "User program might still be running at master and other slave EC2 instances."
+	        echo "Terminate cluster and deploy again."
+	        echo "============================================================================================"
 	        exit 1
 	    fi
 	done
 
-	echo "========================================================================================================="
-	echo "User job is running in the cluster. Check for _SUCCESS or _ERROR file in the output folder after a while."
-	echo "========================================================================================================="
+	echo "=============================================================================================="
+	echo "User job is running in the cluster. Check S3 bucket for mentioned output folder after a while."
+	echo "=============================================================================================="
 }
 
 # Starting point for the Bash script
