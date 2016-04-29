@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Builds mr-blitz.jar and makes it available in 'dist' directory as well as
-# installs mr-blitz.jar in local Maven repository.
+# Builds blitz.jar and makes it available in 'dist' directory as well as
+# installs blitz.jar in local Maven repository.
 #
 # Pre-requisites:
 # ===============
@@ -13,10 +13,10 @@
 # Run the following to make this script executable -> chmod +x build.sh
 #
 echo "============================================================================"
-echo "  BUILDING mr-blitz.jar..."
+echo "  BUILDING blitz.jar..."
 echo "============================================================================"
 mkdir -p dist
-mvn clean install && cp target/mr-blitz.jar dist/mr-blitz.jar
+mvn clean install && cp target/blitz.jar dist/blitz.jar
 if [[ $? != 0 ]];
 then
 	echo "============================================================================"
@@ -25,12 +25,12 @@ then
 	exit 1
 fi
 echo "============================================================================"
-echo "1. Latest build of mr-blitz.jar is available in dist folder."
-echo "2. Latest build of mr-blitz.jar is also installed in local Maven repository."
+echo "1. Latest build of blitz.jar is available in dist folder."
+echo "2. Latest build of blitz.jar is also installed in local Maven repository."
 echo "   Add a project dependency as follows: "
 echo "   <dependency>"
-echo "      <groupId>mr-blitz</groupId>"
-echo "      <artifactId>mr-blitz</artifactId>"
+echo "      <groupId>blitz</groupId>"
+echo "      <artifactId>blitz</artifactId>"
 echo "      <version>1.0</version>"
 echo "   </dependency>"
 echo "============================================================================"

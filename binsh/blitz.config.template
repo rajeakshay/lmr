@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This is a template file. Copy this mr-blitz.config.template file to mr-blitz.config and
+# This is a template file. Copy this blitz.config.template file to blitz.config and
 # change the values of parameters.
 #
 # Syntax: KEY_NAME="VALUE"
@@ -9,10 +9,10 @@
 # USER MUST SET THE FOLLOWING PARAMETERS
 # ================================================================================
 
-# Provide the path to mr-blitz.jar (classpath)
-# Example: MRBLITZ_CLASSPATH="/home/amraje/mr-blitz/dist/mr-blitz.jar"
+# Provide the path to blitz.jar (classpath)
+# Example: BLITZ_CLASSPATH="/home/amraje/blitz/dist/blitz.jar"
 
-MRBLITZ_CLASSPATH=""
+BLITZ_CLASSPATH=""
 
 # Absolute path to your EC2 key-pair name
 # See - http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair

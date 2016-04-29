@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Use this script to automatically create a cluster, deploy MapReduce jobs built using MR Blitz API
+# Use this script to automatically create a cluster, deploy MapReduce jobs built using Blitz API
 # and terminate the cluster.
 #
 # Pre-requisites:
@@ -11,69 +11,69 @@
 #
 # Step 0:
 # =======
-# Run the following to make this script executable -> chmod +x automate.sh
+# Run the following to make this script executable -> chmod +x blitz.sh
 #
 # Usage:
 # ======
-#  ./automate.sh start {No. of slaves}                (spins up EC2 instances, installs required software and starts the master)
-#  ./automate.sh stop                                 (terminate all EC2 instances to save money)
-#  ./automate.sh deploy {Job JAR} {arguments for JAR} (run MR Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
+#  ./blitz.sh start {No. of slaves}                (spins up EC2 instances, installs required software and starts the master)
+#  ./blitz.sh stop                                 (terminate all EC2 instances to save money)
+#  ./blitz.sh deploy {Job JAR} {arguments for JAR} (run Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
 
-# Check for the existence of mr-blitz.config file
+# Check for the existence of blitz.config file
 current_dir=$(dirname "$BASH_SOURCE")
-if [ ! -f "${current_dir}/mr-blitz.config" ];
+if [ ! -f "${current_dir}/blitz.config" ];
 then
-   echo "Config file ${current_dir}/mr-blitz.config does not exist." >&2
+   echo "Config file ${current_dir}/blitz.config does not exist." >&2
    exit 1 # Exit the script with an error status
 fi
 
 # Read in all the parameters from the config file
-source ${current_dir}/mr-blitz.config
+source ${current_dir}/blitz.config
 
 # Perform validation of necessary config parameters
-if [ -z "$MRBLITZ_CLASSPATH" ];
+if [ -z "$BLITZ_CLASSPATH" ];
 then
-    echo "Absolute path to mr-blitz.jar is not set in mr-blitz.config." >&2
+    echo "Absolute path to blitz.jar is not set in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$key_location" ];
 then
-    echo "Absolute path to key-pair is not set in mr-blitz.config." >&2
+    echo "Absolute path to key-pair is not set in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$security_group" ];
 then
-    echo "EC2 security group is not set in mr-blitz.config." >&2
+    echo "EC2 security group is not set in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$image_id" ];
 then
-    echo "Image Id is required in mr-blitz.config to spin up ec2 instances." >&2
+    echo "Image Id is required in blitz.config to spin up ec2 instances." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$user" ];
 then
-    echo "Default EC2 user name must be set in mr-blitz.config." >&2
+    echo "Default EC2 user name must be set in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$secret_folder" ];
 then
-    echo "Secret hidden folder name for storing key-pairs on EC2 must be specified in mr-blitz.config." >&2
+    echo "Secret hidden folder name for storing key-pairs on EC2 must be specified in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$master_instance_type" ];
 then
-    echo "Specify an EC2 instance type for master node in mr-blitz.config." >&2
+    echo "Specify an EC2 instance type for master node in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$node_instance_type" ];
 then
-    echo "Specify an EC2 instance type for slave nodes in mr-blitz.config." >&2
+    echo "Specify an EC2 instance type for slave nodes in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 if [ -z "$port" ];
 then
-    echo "Default port number for Socket communication not specified in mr-blitz.config." >&2
+    echo "Default port number for Socket communication not specified in blitz.config." >&2
     exit 1 # Exit the script with an error status
 fi
 
@@ -278,13 +278,13 @@ deploy ()
 	    exit 1
 	fi
 	scp -i ${key_location} -o StrictHostKeyChecking=no _work/masterPublicAddress.txt "${user}@${master_ip}:/home/${user}/"
-	scp -i ${key_location} -o StrictHostKeyChecking=no ${MRBLITZ_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
+	scp -i ${key_location} -o StrictHostKeyChecking=no ${BLITZ_CLASSPATH} "${user}@${master_ip}:/home/${user}/"
 	if [[ $? != 0 ]];
 	then
 	    echo "Could not deploy to master. Abandoning deployment."
 	    exit 1
 	fi
-	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar mr-blitz.jar ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
+	ssh -i ${key_location} -o StrictHostKeyChecking=no ${user}"@"${master_ip} "nohup java -Xms2g -Xmx5g -jar blitz.jar ${master_private_ip} ${port} ${no_of_slaves} 1> success.out 2> error.err < /dev/null &"
     if [[ $? != 0 ]];
 	then
 	    echo "Could not start resource manager on master. Abandoning deployment."

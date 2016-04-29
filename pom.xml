@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>mr-blitz</groupId>
-    <artifactId>mr-blitz</artifactId>
+    <groupId>blitz</groupId>
+    <artifactId>blitz</artifactId>
     <version>1.0</version>
-    <name>mr-blitz</name>
+    <name>blitz</name>
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -83,7 +83,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>mr-blitz</finalName>
+                    <finalName>blitz</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
