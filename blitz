@@ -9,15 +9,11 @@
 # Java 7 SE
 # Maven     (https://maven.apache.org/install.html)
 #
-# Step 0:
-# =======
-# Run the following to make this script executable -> chmod +x blitz.sh
-#
 # Usage:
 # ======
-#  ./blitz.sh start {No. of slaves}                (spins up EC2 instances, installs required software and starts the master)
-#  ./blitz.sh stop                                 (terminate all EC2 instances to save money)
-#  ./blitz.sh deploy {Job JAR} {arguments for JAR} (run Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
+#  ./blitz start {No. of slaves}                (spins up EC2 instances, installs required software and starts the master)
+#  ./blitz stop                                 (terminate all EC2 instances to save money)
+#  ./blitz deploy {Job JAR} {arguments for JAR} (run Blitz MapReduce job in the cluster and wait for the result in output S3 bucket)
 
 # Check for the existence of blitz.config file
 current_dir=$(dirname "$BASH_SOURCE")

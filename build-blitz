@@ -8,10 +8,6 @@
 # Java 7 SE
 # Maven     (https://maven.apache.org/install.html)
 #
-# Step 0:
-# =======
-# Run the following to make this script executable -> chmod +x build.sh
-#
 echo "============================================================================"
 echo "  BUILDING blitz.jar..."
 echo "============================================================================"
