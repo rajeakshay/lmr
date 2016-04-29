@@ -27,9 +27,6 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
  * This Class handles all the requests from the Client
- * @author Abhijeet Sharma
- * @version 2.0
- * @since April 8, 2016 
  */
 public class SortServerHandler extends ChannelInboundHandlerAdapter{
 

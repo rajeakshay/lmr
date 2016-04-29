@@ -1,4 +1,3 @@
-
 package com.net;
 
 import java.io.IOException;
@@ -18,9 +17,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 /**
- * @author Abhijeet Sharma
- * @version 1.0  
- * @since April 8, 2016 
+ *
  */
 public class SortClientHandler extends ChannelInboundHandlerAdapter{
 	public SampleSort ss;

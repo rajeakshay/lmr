@@ -8,7 +8,6 @@ import com.utils.FileUtils;
 
 /**
  * Class for setting the Mapper class, Reducer class, Input path and Output path
- * @author Deepen
  */
 public class Context {
 

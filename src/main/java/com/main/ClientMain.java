@@ -12,9 +12,6 @@ import com.net.SortClient;
 
 /**
  * Main Class for Client
- * @author Abhijeet Sharma, Deepen Mehta
- * @since Apr 10, 2016
- *
  */
 public class ClientMain {
 	// Initialized by Client

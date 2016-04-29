@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# Authors: Akshay Raje, Afan Khan
-# Maintainer: Akshay Raje
-#
 # Use this script to automatically create a cluster, deploy MapReduce jobs built using MR Blitz API
 # and terminate the cluster.
 #

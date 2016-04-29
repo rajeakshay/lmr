@@ -7,8 +7,6 @@ import com.utils.FileUtils;
 
 /**
  * Main Class for Server
- * @author Abhijeet Sharma, Deepen Mehta
- * @since Apr 10, 2016
  *
  */
 public class ServerMain {

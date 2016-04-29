@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-# Authors: Akshay Raje
-#
 # Builds mr-blitz.jar and makes it available in 'dist' directory as well as
 # installs mr-blitz.jar in local Maven repository.
 #

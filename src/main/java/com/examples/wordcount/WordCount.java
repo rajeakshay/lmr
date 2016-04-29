@@ -1,9 +1,3 @@
-/**
- * @author Deepen Mehta
- * @version 1.0  
- * @since April 8, 2016 
- */
-
 package com.examples.wordcount;
 
 
@@ -14,7 +8,6 @@ import com.main.Context;
 
 /**
  * Example class for Word Count program. This program is used to test the Map Reduce API.
- * @author Deepen Mehta
  */
 public class WordCount {
 

@@ -1,9 +1,3 @@
-/**
- * @author Deepen Mehta
- * @version 1.0  
- * @since April 8, 2016 
- */
-
 package com.examples.wordcount;
 
 import com.main.Context;

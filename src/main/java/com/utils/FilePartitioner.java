@@ -9,7 +9,6 @@ import com.main.ClientMain;
 
 /**
  * Class to partition single file based on key
- * @author Deepen Mehta
  */
 public class FilePartitioner {
 	public static void partition(String filename) {

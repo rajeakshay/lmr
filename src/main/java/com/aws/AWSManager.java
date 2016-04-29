@@ -1,9 +1,3 @@
-/**
- * @author Abhijeet Sharma, Deepen Mehta
- * @version 1.0  
- * @since April 8, 2016 
- */
-
 package com.aws;
 
 import java.io.BufferedReader;

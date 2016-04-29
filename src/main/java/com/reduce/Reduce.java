@@ -10,7 +10,6 @@ import com.utils.GenericFactory;
 
 /**
  * Provides an implementation of Reduce Task
- * @author Deepen
  */
 public class Reduce {
 	public AWSManager AWSConnect;

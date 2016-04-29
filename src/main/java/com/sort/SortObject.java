@@ -1,8 +1,3 @@
-/*
- * @author Mehta, Deepen  
- * @created Apr 8, 2016 
- */
-
 package com.sort;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +5,6 @@ import java.util.HashMap;
 
 /**
  * Custom class for Sorting the data
- * @author Deepen
  *
  */
 public class SortObject {
@@ -82,8 +76,7 @@ public class SortObject {
 }
 
 /**
- * Custom class for compare method 
- * @author Deepen
+ * Custom class for compare method
  *
  */
 class SortComparator implements Comparator<SortObject> {

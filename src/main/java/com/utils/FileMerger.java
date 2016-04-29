@@ -9,8 +9,6 @@ import java.io.PrintWriter;
 
 /**
  * Class to lexicographically merge files according to key.
- * @author Deepen Mehta 
- * @created Apr 8, 2016 
  */
 public class FileMerger
 {

@@ -20,9 +20,6 @@ import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
 /**
  * This Class initializes the server and provides methods to start it.
- * @author Abhijeet Sharma
- * @version 2.0
- * @since April 8, 2016 
  */
 public class SortServer {
 	public static final Logger LOG = LoggerFactory.getLogger("server");

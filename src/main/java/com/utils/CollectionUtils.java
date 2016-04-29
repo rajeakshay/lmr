@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * Class to extend capabilities of Java Collections.
- * @author Akshay Raje
  */
 public class CollectionUtils {
     /**

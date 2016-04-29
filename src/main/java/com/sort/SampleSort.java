@@ -20,7 +20,6 @@ import com.utils.FileUtils;
 
 /**
  * This class generates samples data, fetches pivots from samples, partitions and uploads data to S3.
- * @author Deepen Sharma, Abhijeet Sharma
  */
 public class SampleSort {
 	public AWSManager AWSConnect;

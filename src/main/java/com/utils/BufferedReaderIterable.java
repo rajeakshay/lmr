@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 /**
  * Custom Iterable class for iterating through the file contents
- * @author Deepen
  *
  */
 public class BufferedReaderIterable implements Iterable<String> {
@@ -43,7 +42,6 @@ public class BufferedReaderIterable implements Iterable<String> {
     
     /**
      * Custom BufferedReaderIterator class
-     * @author Deepen
      *
      */
     private class BufferedReaderIterator implements Iterator<String> {

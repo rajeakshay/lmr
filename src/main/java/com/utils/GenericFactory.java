@@ -1,7 +1,6 @@
 package com.utils;
 /**
  * Generic Factory for Mapper/Reducer Object.
- * @author Deepen Mehta
  */
 public class GenericFactory {
 	/**

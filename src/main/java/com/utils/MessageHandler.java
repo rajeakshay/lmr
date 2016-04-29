@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 /**
  * This Class handles messages between server and clients.
- * @author Abhijeet Sharma
- * @version 1.0
- * @since April 19, 2016
  */
 public class MessageHandler implements Serializable {
 

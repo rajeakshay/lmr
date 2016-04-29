@@ -9,7 +9,6 @@ import com.utils.GenericFactory;
 
 /**
  * Provides an implementation of Map Task
- * @author Deepen
  */
 public class Map {
 	public AWSManager AWSConnect;

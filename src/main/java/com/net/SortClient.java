@@ -1,4 +1,4 @@
-	package com.net;
+package com.net;
 
 import java.net.InetSocketAddress;
 
@@ -19,9 +19,6 @@ import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
 /**
  * This Class initializes the client and provides methods to start it.
- * @author Abhijeet Sharma
- * @version 2.0
- * @since April 8, 2016 
  */
 public class SortClient {
 	public static final Logger LOG = LoggerFactory.getLogger("client");

@@ -9,7 +9,6 @@ import com.sort.SortObject;
 
 /**
  * Class containing methods to write files in local system.
- * @author Deepen Mehta, Abhijeet Sharma
  */
 public class FileUtils {
 
