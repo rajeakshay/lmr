@@ -1,8 +1,8 @@
-# MR Blitz [![Build Status](https://travis-ci.org/rajeakshay/mr-blitz.svg?branch=master)](https://travis-ci.org/rajeakshay/mr-blitz)
+# Blitz [![Build Status](https://travis-ci.org/rajeakshay/blitz.svg?branch=master)](https://travis-ci.org/rajeakshay/blitz)
   
 A fast, lightweight and robust MapReduce API to process large datasets on AWS EC2 cluster.
 
-# Parallel data processing with MR Blitz API
+# Parallel data processing with Blitz API
 For the purpose of this example, we will assume that you have cloned this repository in your home folder. **(~/mr-blitz)**
 
 ## Build from source
@@ -23,7 +23,7 @@ Make sure that you have followed the previous steps before deploying in AWS clus
 ```
 Note that in the above command, you have to give a relative or absolute path to automate.sh script. Optionally, export the location of `mr-blitz/binsh/automate.sh` in your **PATH** environment variable, so that you can reference it directly from any folder.
 
-The above command will start 1 master and 4 slave EC2 instances which are waiting for a user program. Package your project (WordCount) which uses MR Blitz API as a JAR and deploy it as follows
+The above command will start 1 master and 4 slave EC2 instances which are waiting for a user program. Package your project (WordCount) which uses Blitz API as a JAR and deploy it as follows
 ```
 ~/mr-blitz/binsh/automate.sh deploy WordCount.jar s3n://mybucket/input s3n://mybucket/output
 ```
