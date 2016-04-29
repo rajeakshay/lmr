@@ -1,5 +1,5 @@
 com.aws
-com.examples
+com.examples.wordcount
 com.main
 com.map
 com.net
