@@ -38,10 +38,12 @@ public class CollectionUtils {
         int counter = 1;
         List<T> freshList = new ArrayList<T>();
         for(T elem : list){
+            // Keep collecting elements till counter is equal to partition size
             if(counter < size){
                 freshList.add(elem);
                 counter++;
             }
+            // When counter reaches partition size, save collected sublist and start a fresh one
             else if(counter == size){
                 freshList.add(elem);
                 partitionedList.add(freshList);
@@ -49,6 +51,7 @@ public class CollectionUtils {
                 counter = 1;
             }
         }
+        // Collect the last smaller sublist in cases where list.size() is not perfectly divisible by partition size
         if(!freshList.isEmpty()) {
             partitionedList.add(freshList);
         }
