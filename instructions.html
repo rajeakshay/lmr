@@ -1,0 +1,21 @@
+<h1 id="blitz-build-status">Blitz <a href="https://travis-ci.org/rajeakshay/blitz"><img src="https://travis-ci.org/rajeakshay/blitz.svg?branch=master" alt="Build Status" /></a></h1>
+<p>A lightweight MapReduce API to process large datasets on AWS EC2 cluster.</p>
+<h1 id="parallel-data-processing-with-blitz-api">Parallel data processing with Blitz API</h1>
+<p><strong>Prerequisite:</strong> Your machine should have Java 7, Maven and awscli already installed. Make sure to set the default output type of awscli as JSON.<br />
+For the purpose of this example, we will assume that you have cloned this repository in your home folder. <strong>(~/blitz)</strong></p>
+<h2 id="build-from-source">Build from source</h2>
+<p>Navigate to <code>blitz</code> folder and run the executable <code>build-blitz</code>. <code>blitz.jar</code> will be available in <code>dist</code> directory.</p>
+<h2 id="configuring-your-blitz-installation">Configuring your blitz installation</h2>
+<p>Navigate to <code>blitz</code> folder and in the <code>etc</code> directory, copy <code>blitz.config.template</code> to <code>blitz.config</code>. Provide the key-pair name, security group and the absolute path to <code>blitz.jar</code> in <code>blitz.config</code>.</p>
+<h2 id="using-blitz.jar-in-your-projects">Using blitz.jar in your projects</h2>
+<p>Copy <code>blitz.jar</code> from <code>dist</code> folder in to your project folder and add it to your classpath. You can find example implementations under <code>src/main/java/com/examples</code> directory.</p>
+<h2 id="deploying-your-program-in-aws-cluster">Deploying your program in AWS cluster</h2>
+<p>Make sure that you have followed the previous steps before deploying in AWS cluster. Let us assume that you are working in a project folder named <code>WordCount</code> and you have added <code>blitz.jar</code> in the classpath of your project to use the MapReduce API. To start an AWS cluster with <strong>1 master and 4 slaves</strong>, give the following command from your project folder</p>
+<pre><code>~/blitz/blitz start 4</code></pre>
+<p>Note that in the above command, you have to give a relative or absolute path to blitz script. Optionally, export the location of <code>blitz/blitz</code> in your <strong>PATH</strong> environment variable, so that you can reference it directly from any folder.</p>
+<p>The above command will start 1 master and 4 slave EC2 instances which are waiting for a user program. Package your project (WordCount) which uses Blitz API as a JAR and deploy it as follows</p>
+<pre><code>~/blitz/blitz deploy WordCount.jar s3n://mybucket/input s3n://mybucket/output</code></pre>
+<p>Here we have assumed that your input and output folder paths are passed as command line arguments. Wait for the program to finish and check the output bucket for <code>_SUCCESS</code> file.</p>
+<h2 id="terminating-the-cluster">Terminating the cluster</h2>
+<p>Use the following command</p>
+<pre><code>~/blitz/blitz stop</code></pre>

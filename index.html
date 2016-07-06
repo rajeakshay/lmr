@@ -1,1 +1,40 @@
-blitz
+<!DOCTYPE html>
+<html lang="en" ng-app>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Blitz project page">
+	<meta name="author" content="Akshay M. Raje">
+	<title>Blitz</title>
+	<link href="img/favicon-blitz.ico" rel="icon" type="image/x-icon"/>
+	<!-- Bootswatch Paper theme -->
+	<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/paper/bootstrap.min.css" rel="stylesheet" integrity="sha384-2mX2PSpkRSXLQzmNzH3gwK6srb06+OfbDlYjbog8LQuALYJjuQ3+Yzy2JIWNV9rW" crossorigin="anonymous">
+	<!-- Font Awesome -->
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+	<!-- My own styling foo -->
+	<link href="css/styles.css" rel="stylesheet">
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+<div class="jumbotron text-center">
+	<div class="container">
+		<h2><span class="fa fa-bolt"></span>Blitz</h2>
+		<p>A lightweight MapReduce API to process large datasets on AWS EC2 cluster</p>
+		<a href="https://github.com/rajeakshay/blitz/archive/master.zip" class="btn btn-default"><span class="fa fa-download"></span>Download ZIP</a>
+		<a href="https://github.com/rajeakshay/blitz" class="btn btn-default"><span class="fa fa-github"></span>View on GitHub</a>
+		<a href="javadocs/index.html" class="btn btn-default"><span class="fa fa-book"></span>Read Javadocs</a>
+	</div>
+</div>
+<div class="container">
+	<div ng-include="'instructions.html'"></div>
+</div>
+<!-- Have AngularJS do its magic -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+@-webkit-viewport   { width: device-width; }
+@-moz-viewport      { width: device-width; }
+@-ms-viewport       { width: device-width; }
+@-o-viewport        { width: device-width; }
+@viewport           { width: device-width; }
+
+@media (max-width: 767px){
+	.jumbotron a{
+		display: block;
+		margin-bottom: 5px;
+	}
+}
+
+.jumbotron {
+	background-color: seagreen;
+}
+
+.jumbotron h2, .jumbotron p{
+	color: white;
+}
+
+.fa {
+	padding: 0 7px;
+}
+
+.fa-github, .fa-book, .fa-download{
+	font-size: large;
+}
