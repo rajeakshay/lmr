@@ -22,6 +22,10 @@ logs/
 output/
 _work/
 
+# Javadocs
+javadocs/
+javadoc/
+
 # Java class files
 *.class
 
