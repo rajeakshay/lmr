@@ -53,7 +53,7 @@ public class Context {
 	 * @param key
 	 * @param value
 	 */
-	public static void write(String key, String value) {
+	public void write(String key, String value) {
 		String filePath = ClientMain.CURRENT_OPCODE == 1 ? ClientMain.MAP_PATH : ClientMain.LOCAL_OUTPUT_PATH;
 		FileUtils.useBufferedOutPutStream(key, value, filePath + "/" + ClientMain.CLIENT_NUM + "_" + ClientMain.CURRENT_FILE);
 	}
